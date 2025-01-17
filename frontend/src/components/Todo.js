@@ -126,7 +126,18 @@ function App() {
                             <tr key={item.id}>
                                 <td>{item.job}</td>
                                 <td>{item.add_time || 'N/A'}</td>
-                                <td>{item.ddl || 'N/A'}</td>
+                                <td>
+                                    {item.ddl
+                                        ? new Date(item.ddl).toLocaleString('en-CA', {
+                                            year: 'numeric',
+                                            month: '2-digit',
+                                            day: '2-digit',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: false,
+                                        }).replace(',', '')
+                                        : 'N/A'}
+                                </td>
                                 <td className={item.status === 1 ? 'completed' : 'pending'}>
                                     {item.status === 1 ? 'Completed' : 'Pending'}
                                 </td>
@@ -198,11 +209,12 @@ function App() {
                     <label>
                         DDL:
                         <input
-                            type="date"
-                            value={editJob.ddl || ''}
+                            type="datetime-local"
+                            value={editJob.ddl ? editJob.ddl.slice(0, 16) : ''} // Slice ensures the value matches 'yyyy-MM-ddTHH:mm' format
                             onChange={(e) => setEditJob({ ...editJob, ddl: e.target.value })}
                             style={{ padding: '10px', margin: '10px 0', width: '100%' }}
                         />
+
                     </label>
                     <label>
                         Status:

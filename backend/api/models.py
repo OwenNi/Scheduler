@@ -15,7 +15,7 @@ class Todolist(models.Model):
         (0, 'to do'),
         (1, 'finished')
     )
-    status = models.SmallIntegerField(verbose_name='状态', choices=status_choices, default = 1)
+    status = models.SmallIntegerField(verbose_name='状态', choices=status_choices, default = 0)
     reoccur_choices = (
         (0, 'not reoccur'),
         (1, 'reoccur')

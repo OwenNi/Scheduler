@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Todolist, TimeRecords
 from .serializers import TodolistSerializer, TimeRecordsSerializer
+import datetime
 
 class TodoListAPIView(APIView):
     def get(self, request):
@@ -39,6 +40,13 @@ class TodoDetailAPIView(APIView):
         #     'status': request.data['status'],
         #     'count' : request.data['count'],
         # }
+        print(request.data,123)
+        raw_ddl = request.data['ddl']
+        try:
+            request.data['ddl'] = datetime.datetime.strptime(raw_ddl, '%Y-%m-%dT%H:%M')
+        except:
+            print(raw_ddl)
+            request.data['ddl'] = datetime.datetime.strptime(raw_ddl, '%Y-%m-%d')
         serializer = TodolistSerializer(todo, data=request.data)
         if serializer.is_valid():
             serializer.save()
