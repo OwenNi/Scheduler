@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from .models import Todolist
+from .models import Todolist, TimeRecords
 
 class TodolistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todolist
-        fields = '__all__'  # Include all fields from the model
+        fields = ['id','job', 'add_time', 'ddl', 'status', 'count']
 
-    def validate_title(self, value):
-        if Todolist.objects.filter(job=value).exists():
-            raise serializers.ValidationError("This title already exists.")
-        return value
+class TimeRecordsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TimeRecords
+        fields = ['id','record','focus_time','occur_time']  # Include all fields from the model

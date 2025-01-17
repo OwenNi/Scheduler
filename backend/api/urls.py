@@ -1,12 +1,17 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import TodoViewSet
+from django.urls import path
+from .views import (
+    TodoListAPIView, 
+    TodoDetailAPIView, 
+    TimeRecordsListAPIView, 
+    TimeRecordsDetailAPIView
+)
 
-# Create a router and register the ViewSet
-router = DefaultRouter()
-router.register(r'todo', TodoViewSet, basename='todo')
-
-# Include the router-generated URLs
 urlpatterns = [
-    path('', include(router.urls)),
+    # Todo URLs
+    path('todo/', TodoListAPIView.as_view(), name='todo-list'),
+    path('todo/<int:pk>/', TodoDetailAPIView.as_view(), name='todo-detail'),
+    
+    # Time Records URLs
+    path('timerecords/', TimeRecordsListAPIView.as_view(), name='timerecords-list'),
+    path('timerecords/<int:pk>/', TimeRecordsDetailAPIView.as_view(), name='timerecords-detail'),
 ]

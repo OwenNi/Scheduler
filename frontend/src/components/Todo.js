@@ -1,0 +1,270 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import './Todo.css';
+import Timer from './Timer';
+
+function App() {
+    const [data, setData] = useState([]);
+    const [selectedJobId, setSelectedJobId] = useState(null); // State to store the selected job ID
+    const [newJob, setNewJob] = useState(''); // State for new job input
+    const [editJob, setEditJob] = useState(null); // State for editing a job
+    const [selectedJob, setSelectedJob] = useState(null); // State to store the selected job for editing
+
+    useEffect(() => {
+        fetchJobs();
+    }, []);
+
+    const fetchJobs = () => {
+        axios
+            .get('http://127.0.0.1:8000/api/todo/') // Replace with your actual backend endpoint
+            .then((response) => {
+                setData(response.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    };
+
+    // Function to handle the Start Timer button click
+    const handleStartTimer = (id,job) => {
+        setSelectedJobId(id); // Set the selected job ID
+        setSelectedJob(job);
+    };
+
+    // Function to handle delete job
+    const handleDeleteJob = (id) => {
+        axios
+            .delete(`http://127.0.0.1:8000/api/todo/${id}/`) // Replace with your actual delete endpoint
+            .then(() => {
+                fetchJobs();
+            })
+            .catch((error) => {
+                console.error('Error deleting job:', error);
+            });
+    };
+
+    // Function to handle editing a job
+    const handleEditJob = (job) => {
+        setEditJob(job); // Set the selected job for editing
+    };
+
+    // Function to handle saving edited job
+    const handleSaveEdit = () => {
+        if (!editJob) return;
+        console.log(editJob);
+        axios
+            .put(`http://127.0.0.1:8000/api/todo/${editJob.id}/`, editJob) // Replace with your actual update endpoint
+            .then(() => {
+                setEditJob(null); // Clear edit form
+                fetchJobs(); // Refresh job list
+            })
+            .catch((error) => {
+                console.error('Error updating job:', error);
+            });
+    };
+
+    // Function to handle create new job
+    const handleCreateJob = () => {
+        if (newJob.trim() === '') {
+            alert('Job title cannot be empty!');
+            return;
+        }
+
+        axios
+            .post('http://127.0.0.1:8000/api/todo/', { job: newJob }) // Replace with your actual create endpoint
+            .then(() => {
+                setNewJob('');
+                fetchJobs();
+            })
+            .catch((error) => {
+                console.error('Error creating job:', error);
+            });
+    };
+
+    return (
+        <div>
+            <div className="table-container">
+                <h1>Job List</h1>
+                <div style={{ marginBottom: '20px' }}>
+                    <input
+                        type="text"
+                        value={newJob}
+                        onChange={(e) => setNewJob(e.target.value)}
+                        placeholder="Enter new job title"
+                        style={{ padding: '10px', fontSize: '16px', marginRight: '10px' }}
+                    />
+                    <button
+                        onClick={handleCreateJob}
+                        style={{
+                            padding: '10px 20px',
+                            fontSize: '16px',
+                            backgroundColor: '#007bff',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        Create Job
+                    </button>
+                </div>
+
+                <table className="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Job</th>
+                            <th>Add Time</th>
+                            <th>DDL</th>
+                            <th>Status</th>
+                            <th>Count</th>
+                            <th>Start Timer</th>
+                            <th>Manage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {data.map((item) => (
+                            <tr key={item.id}>
+                                <td>{item.job}</td>
+                                <td>{item.add_time || 'N/A'}</td>
+                                <td>{item.ddl || 'N/A'}</td>
+                                <td className={item.status === 1 ? 'completed' : 'pending'}>
+                                    {item.status === 1 ? 'Completed' : 'Pending'}
+                                </td>
+                                <td>{item.count}</td>
+                                <td>
+                                    <button
+                                        onClick={() => handleStartTimer(item.id, item.job)}
+                                        style={{
+                                            padding: '5px 10px',
+                                            backgroundColor: '#28a745',
+                                            color: '#fff',
+                                            border: 'none',
+                                            borderRadius: '3px',
+                                            cursor: 'pointer',
+                                        }}
+                                    >
+                                        Start Timer
+                                    </button>
+                                </td>
+                                <td>
+                                    <button
+                                        onClick={() => handleEditJob(item)}
+                                        style={{
+                                            padding: '5px 10px',
+                                            backgroundColor: '#ffc107',
+                                            color: '#fff',
+                                            border: 'none',
+                                            borderRadius: '3px',
+                                            cursor: 'pointer',
+                                            marginRight: '5px',
+                                        }}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteJob(item.id)}
+                                        style={{
+                                            padding: '5px 10px',
+                                            backgroundColor: '#dc3545',
+                                            color: '#fff',
+                                            border: 'none',
+                                            borderRadius: '3px',
+                                            cursor: 'pointer',
+                                        }}
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+
+            {/* Edit Job Form */}
+            {editJob && (
+                <div style={{ marginTop: '20px', border: '1px solid #ccc', padding: '20px', borderRadius: '5px' }}>
+                    <h2>Edit Job</h2>
+                    <label>
+                        Job Title:
+                        <input
+                            type="text"
+                            value={editJob.job}
+                            onChange={(e) => setEditJob({ ...editJob, job: e.target.value })}
+                            style={{ padding: '10px', margin: '10px 0', width: '100%' }}
+                        />
+                    </label>
+                    <label>
+                        DDL:
+                        <input
+                            type="date"
+                            value={editJob.ddl || ''}
+                            onChange={(e) => setEditJob({ ...editJob, ddl: e.target.value })}
+                            style={{ padding: '10px', margin: '10px 0', width: '100%' }}
+                        />
+                    </label>
+                    <label>
+                        Status:
+                        <select
+                            value={editJob.status}
+                            onChange={(e) => setEditJob({ ...editJob, status: parseInt(e.target.value, 10) })}
+                            style={{ padding: '10px', margin: '10px 0', width: '100%' }}
+                        >
+                            <option value={0}>Pending</option>
+                            <option value={1}>Completed</option>
+                        </select>
+                    </label>
+                    <label>
+                        Count:
+                        <input
+                            type="number"
+                            value={editJob.count}
+                            onChange={(e) => setEditJob({ ...editJob, count: e.target.value })}
+                            style={{ padding: '10px', margin: '10px 0', width: '100%' }}
+                        />
+                    </label>
+                    <button
+                        onClick={handleSaveEdit}
+                        style={{
+                            padding: '10px 20px',
+                            fontSize: '16px',
+                            backgroundColor: '#28a745',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: 'pointer',
+                            marginRight: '10px',
+                        }}
+                    >
+                        Save
+                    </button>
+                    <button
+                        onClick={() => setEditJob(null)}
+                        style={{
+                            padding: '10px 20px',
+                            fontSize: '16px',
+                            backgroundColor: '#dc3545',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            )}
+
+
+            {/* Timer Component */}
+            {selectedJobId && (
+                <div style={{ marginTop: '20px' }}>
+                    <Timer jobId={selectedJobId} job = {selectedJob} /> {/* Pass the selected job ID to Timer */}
+                </div>
+            )}
+        </div>
+    );
+}
+
+export default App;
