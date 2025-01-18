@@ -41,7 +41,9 @@ class TodoDetailAPIView(APIView):
         #     'count' : request.data['count'],
         # }
         print(request.data,123)
-        raw_ddl = request.data['ddl']
+        raw_ddl = None
+        if 'ddl' in request.data:
+            raw_ddl = request.data['ddl']
         if raw_ddl is not None: 
             try:
                 request.data['ddl'] = datetime.datetime.strptime(raw_ddl, '%Y-%m-%dT%H:%M')

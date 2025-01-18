@@ -34,14 +34,16 @@ function App() {
 
     // Function to handle delete job
     const handleDeleteJob = (id) => {
-        axios
-            .delete(`http://127.0.0.1:8000/api/todo/${id}/`) // Replace with your actual delete endpoint
-            .then(() => {
-                fetchJobs();
-            })
-            .catch((error) => {
-                console.error('Error deleting job:', error);
-            });
+        if (window.confirm('Are you sure you want to delete this job?')) {
+            axios
+                .delete(`http://127.0.0.1:8000/api/todo/${id}/`) // Replace with your actual delete endpoint
+                .then(() => {
+                    fetchJobs();
+                })
+                .catch((error) => {
+                    console.error('Error deleting job:', error);
+                });
+        }
     };
 
     // Function to handle editing a job
@@ -82,7 +84,31 @@ function App() {
             });
     };
 
+    const handleChangeJobStatus = (job) => {
+        if (job.status === 0){
+            job.status = 1;
+        } else {
+            job.status = 0;
+        }
+            
+        axios
+            .put(`http://127.0.0.1:8000/api/todo/${job.id}/`,job) // Replace with your actual Change enStatusdpoint
+            .then(() => {
+                fetchJobs();
+            })
+            .catch((error) => {
+                console.error('Error completing job:', error);
+        })
+    }
+
     const filteredData = showCompleted ? data.filter(item => item.status === 0) : data;
+
+        // Sort rows: Completed (status === 1) first, then others
+    const sortedData = [...filteredData].sort((a, b) => {
+        if (a.status === 1 && b.status !== 1) return -1;
+        if (a.status !== 1 && b.status === 1) return 1;
+        return 0;
+    });
 
     return (
         <div>
@@ -145,7 +171,7 @@ function App() {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredData.map((item) => (
+                        {sortedData.map((item) => (
                             <tr key={item.id}>
                                 <td>{item.job}</td>
                                 <td>{item.add_time || 'N/A'}</td>
@@ -181,6 +207,22 @@ function App() {
                                     </button>
                                 </td>
                                 <td>
+                                <button                           
+                                        onClick={() => {
+                                            handleChangeJobStatus(item);
+                                        }}
+                                        style={{
+                                            padding: '5px 10px',
+                                            backgroundColor: item.status === 0 ? 'green' : 'red',
+                                            color: '#fff',
+                                            border: 'none',
+                                            borderRadius: '3px',
+                                            cursor: 'pointer',
+                                            marginRight: '5px',
+                                        }}
+                                    >
+                                        {item.status === 0 ? 'Mark as Completed' : 'Mark as Pending'}
+                                    </button>
                                     <button
                                         onClick={() => handleEditJob(item)}
                                         style={{
