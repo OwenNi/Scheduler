@@ -42,11 +42,12 @@ class TodoDetailAPIView(APIView):
         # }
         print(request.data,123)
         raw_ddl = request.data['ddl']
-        try:
-            request.data['ddl'] = datetime.datetime.strptime(raw_ddl, '%Y-%m-%dT%H:%M')
-        except:
-            print(raw_ddl)
-            request.data['ddl'] = datetime.datetime.strptime(raw_ddl, '%Y-%m-%d')
+        if raw_ddl is not None: 
+            try:
+                request.data['ddl'] = datetime.datetime.strptime(raw_ddl, '%Y-%m-%dT%H:%M')
+            except:
+                print(raw_ddl)
+                request.data['ddl'] = datetime.datetime.strptime(raw_ddl, '%Y-%m-%d')
         serializer = TodolistSerializer(todo, data=request.data)
         if serializer.is_valid():
             serializer.save()

@@ -9,6 +9,7 @@ function App() {
     const [newJob, setNewJob] = useState(''); // State for new job input
     const [editJob, setEditJob] = useState(null); // State for editing a job
     const [selectedJob, setSelectedJob] = useState(null); // State to store the selected job for editing
+    const [showCompleted, setShowCompleted] = useState(false); // Toggle to show completed rows
 
     useEffect(() => {
         fetchJobs();
@@ -81,6 +82,8 @@ function App() {
             });
     };
 
+    const filteredData = showCompleted ? data.filter(item => item.status === 0) : data;
+
     return (
         <div>
             <div className="table-container">
@@ -115,14 +118,34 @@ function App() {
                             <th>Job</th>
                             <th>Add Time</th>
                             <th>DDL</th>
-                            <th>Status</th>
+                            <th>Status             
+                                <div style={{ marginBottom: '15px' }}>
+                                    <button
+                                    onClick={(e) => {
+                                        setShowCompleted(!showCompleted);
+                                        e.target.blur(); // Removes focus from the button
+                                    }}
+                                    style={{
+                                        padding: '10px 20px',
+                                        fontSize: '16px',
+                                        backgroundColor: showCompleted ? '#28a745' : 'red',
+                                        color: '#fff',
+                                        border: 'none',
+                                        borderRadius: '5px',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    {showCompleted ? 'Show All' : 'Show Pending'}
+                                </button>
+                            </div>
+                            </th>
                             <th>Count</th>
                             <th>Start Timer</th>
                             <th>Manage</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map((item) => (
+                        {filteredData.map((item) => (
                             <tr key={item.id}>
                                 <td>{item.job}</td>
                                 <td>{item.add_time || 'N/A'}</td>
