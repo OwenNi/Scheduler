@@ -33,10 +33,10 @@ function App() {
     };
 
     // Function to handle delete job
-    const handleDeleteJob = (id) => {
-        if (window.confirm('Are you sure you want to delete this job?')) {
+    const handleDeleteJob = (job) => {
+        if (window.confirm(`Are you sure you want to delete this job : ${job.job} ?`)) {
             axios
-                .delete(`http://127.0.0.1:8000/api/todo/${id}/`) // Replace with your actual delete endpoint
+                .delete(`http://127.0.0.1:8000/api/todo/${job.id}/`) // Replace with your actual delete endpoint
                 .then(() => {
                     fetchJobs();
                 })
@@ -113,7 +113,6 @@ function App() {
     return (
         <div>
             <div className="table-container">
-                <h1>Job List</h1>
                 <div style={{ marginBottom: '20px' }}>
                     <input
                         type="text"
@@ -165,7 +164,7 @@ function App() {
                                 </button>
                             </div>
                             </th>
-                            <th>Count</th>
+                            {/* <th>Count</th> */}
                             <th>Start Timer</th>
                             <th>Manage</th>
                         </tr>
@@ -190,7 +189,7 @@ function App() {
                                 <td className={item.status === 1 ? 'completed' : 'pending'}>
                                     {item.status === 1 ? 'Completed' : 'Pending'}
                                 </td>
-                                <td>{item.count}</td>
+                                {/* <td>{item.count}</td> */}
                                 <td>
                                     <button
                                         onClick={() => handleStartTimer(item.id, item.job)}
@@ -238,7 +237,7 @@ function App() {
                                         Edit
                                     </button>
                                     <button
-                                        onClick={() => handleDeleteJob(item.id)}
+                                        onClick={() => handleDeleteJob(item)}
                                         style={{
                                             padding: '5px 10px',
                                             backgroundColor: '#dc3545',

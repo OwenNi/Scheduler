@@ -68,6 +68,7 @@ function Timer({ jobId,job }) {
             <div style={{ marginBottom: '20px' }}>
                 {!isRunning && (
                     <>
+                        Setting up timer for : {job} <br /> 
                         <input
                             type="number"
                             value={minutes}
