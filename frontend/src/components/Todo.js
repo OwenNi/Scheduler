@@ -85,20 +85,22 @@ function App() {
     };
 
     const handleChangeJobStatus = (job) => {
-        if (job.status === 0){
-            job.status = 1;
-        } else {
-            job.status = 0;
-        }
-            
-        axios
-            .put(`http://127.0.0.1:8000/api/todo/${job.id}/`,job) // Replace with your actual Change enStatusdpoint
-            .then(() => {
-                fetchJobs();
+        if (window.confirm(`Change completion status of this job : ${job.job} ?`)) {
+            if (job.status === 0){
+                job.status = 1;
+            } else {
+                job.status = 0;
+            }
+                
+            axios
+                .put(`http://127.0.0.1:8000/api/todo/${job.id}/`,job) // Replace with your actual Change enStatusdpoint
+                .then(() => {
+                    fetchJobs();
+                })
+                .catch((error) => {
+                    console.error('Error completing job:', error);
             })
-            .catch((error) => {
-                console.error('Error completing job:', error);
-        })
+        }
     }
 
     const filteredData = showCompleted ? data.filter(item => item.status === 0) : data;
