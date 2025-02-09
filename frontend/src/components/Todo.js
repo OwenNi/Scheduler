@@ -20,20 +20,26 @@ function App() {
         axios
             .get('http://127.0.0.1:8000/api/todo/') // Replace with your actual backend endpoint
             .then((response) => {
-                setData(response.data);
+                
+
+                // Sort rows: Completed (status === 1) first, then others
+                const sortedData = [...response.data].sort((a, b) => {
+                    if (a.status === 1 && b.status !== 1) return -1;
+                    if (a.status !== 1 && b.status === 1) return 1;
+                    return 0;
+                });
+                setData(sortedData);
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
             });
     };
 
-    // Function to handle the Start Timer button click
     const handleStartTimer = (id,job) => {
-        setSelectedJobId(id); // Set the selected job ID
+        setSelectedJobId(id);
         setSelectedJob(job);
     };
 
-    // Function to handle delete job
     const handleDeleteJob = (job) => {
         if (window.confirm(`Are you sure you want to delete this job : ${job.job} ?`)) {
             axios
@@ -47,12 +53,10 @@ function App() {
         }
     };
 
-    // Function to handle editing a job
     const handleEditJob = (job) => {
-        setEditJob(job); // Set the selected job for editing
+        setEditJob(job); 
     };
 
-    // Function to handle saving edited job
     const handleSaveEdit = () => {
         if (!editJob) return;
         console.log(editJob);
@@ -67,7 +71,6 @@ function App() {
             });
     };
 
-    // Function to handle create new job
     const handleCreateJob = () => {
         if (newJob.trim() === '') {
             alert('Job title cannot be empty!');
@@ -92,7 +95,6 @@ function App() {
             } else {
                 job.status = 0;
             }
-                
             axios
                 .put(`http://127.0.0.1:8000/api/todo/${job.id}/`,job) // Replace with your actual Change enStatusdpoint
                 .then(() => {
@@ -104,24 +106,18 @@ function App() {
         }
     }
 
-    const filteredData = showCompleted ? data.filter(item => item.status === 0) : data;
-
-        // Sort rows: Completed (status === 1) first, then others
-    const sortedData = [...filteredData].sort((a, b) => {
-        if (a.status === 1 && b.status !== 1) return -1;
-        if (a.status !== 1 && b.status === 1) return 1;
-        return 0;
-    });
-
     const handleSearch = () => {
         if (searchTerm.trim() === '') {
             fetchJobs();
             return;
         }
+        
         setData(data.filter(item =>
             typeof item.job === "string" && item.job.toLowerCase().includes(searchTerm.toLowerCase())
-        )) 
+        ))
     }
+
+    const filteredData = showCompleted ? data.filter(item => item.status === 0) : data;
 
     return (
         <div>
@@ -172,6 +168,21 @@ function App() {
                     >
                         Search
                     </button>
+
+                    <button
+                        onClick={fetchJobs}
+                        style={{
+                            padding: '10px 20px',
+                            fontSize: '16px',
+                            backgroundColor: 'red',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        Clear Search
+                    </button>
                 </div>
 
                 <table className="styled-table">
@@ -207,7 +218,7 @@ function App() {
                         </tr>
                     </thead>
                     <tbody>
-                        {sortedData.map((item) => (
+                        {filteredData.map((item) => (
                             <tr key={item.id}>
                                 <td>{item.job}</td>
                                 <td>{item.add_time || 'N/A'}</td>
