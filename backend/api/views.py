@@ -46,7 +46,7 @@ class TodoDetailAPIView(APIView):
             raw_ddl = request.data['ddl']
         if raw_ddl is not None: 
             try:
-                request.data['ddl'] = datetime.datetime.strptime(raw_ddl, '%Y-%m-%dT%H:%M')
+                request.data['ddl'] = datetime.datetime.strptime(raw_ddl, '%Y-%m-%dT%H:%M:%SZ')
             except:
                 print(raw_ddl)
                 request.data['ddl'] = datetime.datetime.strptime(raw_ddl, '%Y-%m-%d')

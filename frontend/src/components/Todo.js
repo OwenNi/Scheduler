@@ -10,6 +10,7 @@ function App() {
     const [editJob, setEditJob] = useState(null); // State for editing a job
     const [selectedJob, setSelectedJob] = useState(null); // State to store the selected job for editing
     const [showCompleted, setShowCompleted] = useState(false); // Toggle to show completed rows
+    const [searchTerm, setSearchTerm] = useState(''); // State for search input 
 
     useEffect(() => {
         fetchJobs();
@@ -112,6 +113,16 @@ function App() {
         return 0;
     });
 
+    const handleSearch = () => {
+        if (searchTerm.trim() === '') {
+            fetchJobs();
+            return;
+        }
+        setData(data.filter(item =>
+            typeof item.job === "string" && item.job.toLowerCase().includes(searchTerm.toLowerCase())
+        )) 
+    }
+
     return (
         <div>
             <div className="table-container">
@@ -123,6 +134,7 @@ function App() {
                         placeholder="Enter new job title"
                         style={{ padding: '10px', fontSize: '16px', marginRight: '10px' }}
                     />
+
                     <button
                         onClick={handleCreateJob}
                         style={{
@@ -136,6 +148,29 @@ function App() {
                         }}
                     >
                         Create Job
+                    </button>
+
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{ padding: '10px', fontSize: '16px', marginBottom: '10px' }}
+                    />
+
+                    <button
+                        onClick={handleSearch}
+                        style={{
+                            padding: '10px 20px',
+                            fontSize: '16px',
+                            backgroundColor: '#007bff',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        Search
                     </button>
                 </div>
 
