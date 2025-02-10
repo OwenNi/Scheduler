@@ -24,10 +24,15 @@ function App() {
 
                 // Sort rows: Completed (status === 1) first, then others
                 const sortedData = [...response.data].sort((a, b) => {
-                    if (a.status === 1 && b.status !== 1) return -1;
-                    if (a.status !== 1 && b.status === 1) return 1;
+                    if (a.status === 1 && b.status !== 1) return -2;
+                    if (a.status !== 1 && b.status === 1) return 2;
+                    if (a.status === 0 && b.status === 0){
+                        if (a.job < b.job) return -1;
+                        else return 1;
+                    }
                     return 0;
                 });
+
                 setData(sortedData);
             })
             .catch((error) => {

@@ -9,7 +9,7 @@ current_time = (datetime.datetime.utcnow() - datetime.timedelta(hours=4)).strfti
 # Create your models here.
 class Todolist(models.Model):
     job = models.CharField(verbose_name = '任务名', max_length=64)
-    add_time = models.DateField(verbose_name= '添加时间', blank = True, null=True, default=current_time)
+    add_time = models.DateField(verbose_name= '添加时间', blank = True, null=True)
     ddl = models.DateTimeField(verbose_name='DDL', blank = True, null=True)
     status_choices = (
         (0, 'to do'),
