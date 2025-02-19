@@ -40,7 +40,7 @@ class TodoDetailAPIView(APIView):
         #     'status': request.data['status'],
         #     'count' : request.data['count'],
         # }
-        print(request.data,123)
+        
         raw_ddl = None
         if 'ddl' in request.data:
             raw_ddl = request.data['ddl']
@@ -49,7 +49,7 @@ class TodoDetailAPIView(APIView):
                 request.data['ddl'] = datetime.datetime.strptime(raw_ddl, '%Y-%m-%dT%H:%M:%SZ')
             except:
                 print(raw_ddl)
-                request.data['ddl'] = datetime.datetime.strptime(raw_ddl, '%Y-%m-%d')
+                request.data['ddl'] = datetime.datetime.strptime(raw_ddl, '%Y-%m-%dT%H:%M')
         serializer = TodolistSerializer(todo, data=request.data)
         if serializer.is_valid():
             serializer.save()
