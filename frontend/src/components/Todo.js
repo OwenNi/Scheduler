@@ -82,8 +82,14 @@ function App() {
             return;
         }
 
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // 补零
+        const day = String(now.getDate()).padStart(2, '0'); // 补零
+        const formattedDate = `${year}-${month}-${day}`;
+
         axios
-            .post('http://127.0.0.1:8000/api/todo/', { job: newJob }) // Replace with your actual create endpoint
+            .post('http://127.0.0.1:8000/api/todo/', { job: newJob, add_time: formattedDate }) // Replace with your actual create endpoint
             .then(() => {
                 setNewJob('');
                 fetchJobs();
